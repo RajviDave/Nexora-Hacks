@@ -1,0 +1,16 @@
+body {
+    background-color: #ff00bf;
+}
+.main-div {
+    background-color: black;
+    color: pink;
+    height: 400px;
+    width: 300px;
+    marging:700px;
+}
+
+.login{
+    margin:120px;
+    font-size:15spx;
+    color:white;
+}
