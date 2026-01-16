@@ -7,19 +7,23 @@ body {
     height: 400px;
     width: 300px;
     margin: 0 auto;
-    margin-top: 200px;
+    margin-top: 50px;
     border: 5px solid white;
-    border-radius:20px;
+    border-radius:30px;
     text-align:center;
 }
 
-.login{
-    padding-top:50px;
-    font-size:15spx;
-    color:white;
-    
+.form{
+    margin-top:70px;
 }
 
-.form{
-    margin:10px;
+.heading{
+    display: flex;
+    justify-content:center;
+    margin-top:100px;
+
+}
+
+.google{
+    margin-top:30px;
 }
