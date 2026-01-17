@@ -25,9 +25,11 @@ body {
 }
 
 .google{
-    margin-top:30px;
+    margin-top:10px;
 }
-
 a{
     color:pink;
+}
+a:hover{
+    color:white;
 }
