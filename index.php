@@ -10,7 +10,7 @@
 <body>
     <h1 class="heading">SKILL SYNC</h1>
     <div class="main-div">
-        <form class="form">
+        <form class="form" action=<?php echo $_SERVER['PHP_SELF'];?> method="post" >
             <label><b>Username</b></label><br>
             <input type="text" value="Username" name="username"><br><br><br>
             <label><b>Password</b></label><br>
@@ -18,8 +18,12 @@
             <input type="submit" name="submit" value="SignIn"><br><br>
             <hr>
             <button class="google">Signin With GOOGLE</button><br><br><br>
-            <label>Don't have account?<a href="signup.html">SIGNUP,</a></label>
+            <label>Don't have account?<a href="signup.php">SIGNUP,</a></label>
         </form>
     </div>
 </body>
 </html>
+
+<?php
+    
+?>
