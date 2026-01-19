@@ -1,38 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In</title>
-
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1 class="heading">SKILL SYNC</h1>
-    <div class="main-div">
-        <form class="form" action=<?php echo $_SERVER['PHP_SELF'];?> method="post" >
-            <label><b>EmailID</b></label><br>
-            <input type="text" value="xyz@gmail.com" name="email"><br><br><br>
-            <label><b>Password</b></label><br>
-            <input type="password" value="qwertyui" name="passwd"><br><br><br>
-            <input type="submit" name="submit" value="SignIn"><br><br>
-            <hr>
-            <button class="google">Signin With GOOGLE</button><br><br><br>
-            <label>Don't have account?<a href="signup.php">SIGNUP,</a></label>
-        </form>
-    </div>
-</body>
-</html>
-
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+session_start();
 include("db.php");
+
+if(isset($_SESSION["user_id"])) {
+    header("Location: match.php");
+    exit();
+}
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-    $email = $_POST["email"];
-    $password = $_POST["passwd"];
+    $email = trim($_POST["email"]);
+    $password = $_POST["password"];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, email, password FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
 
@@ -43,14 +25,47 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $user = $result->fetch_assoc();
 
         if(password_verify($password, $user["password"])){
-            echo "Login successful ✅";
-            // start session / redirect
+
+            $_SESSION["user_id"] = $user["id"];
+            $_SESSION["email"] = $user["email"];
+
+            header("Location: match.php");
+            exit();
+
         } else {
-            echo "Wrong password ❌";
+            $error = "Wrong password ❌";
         }
 
     } else {
-        echo "User not found ❌";
+        $error = "User not found ❌";
     }
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+
+<h2>Login</h2>
+
+<?php if(isset($error)) { ?>
+    <p style="color:red; font-weight:bold;"><?php echo $error; ?></p>
+<?php } ?>
+
+<form method="POST" action="index.php">
+    <label>Email:</label><br>
+    <input type="text" name="email" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <button type="submit">Login</button>
+</form>
+
+<p>Don't have account? <a href="signup.php">Signup</a></p>
+
+</body>
+</html>

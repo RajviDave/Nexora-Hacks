@@ -1,61 +1,78 @@
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="main-div">
-        <form class="form" action="signup.php" method="POST">
-            <label><b>Email</b></label><br>
-            <input type="text" value="xyz@gmail.com" name="email"><br><br><br>
-            <label><b>Username</b></label><br>
-            <input type="text" value="Username" name="username"><br><br><br>
-            <label><b>Password</b></label><br>
-            <input type="password" value="qwertyui" name="passwd"><br><br><br>
-            <input type="submit" name="submit" value="SignUp"><br><br>
-            <hr>
-            <button class="google">SignUp With GOOGLE</button><br><br><br>
-        </form>
-    </div>
-</body>
-</html>
-
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+session_start();
 include("db.php");
+
+if(isset($_SESSION["user_id"])) {
+    header("Location: match.php");
+    exit();
+}
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-    $email = htmlspecialchars($_POST["email"]);
-    $username = htmlspecialchars($_POST["username"]);
-    $password = htmlspecialchars($_POST["passwd"]);
+    $email = trim($_POST["email"]);
+    $password = $_POST["password"];
 
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-    // check if email already exists
-    $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
-    $check->bind_param("s", $email);
-    $check->execute();
-    $checkResult = $check->get_result();
-
-    if($checkResult->num_rows > 0){
-        echo "Email already registered!";
+    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        $error = "Invalid email format ❌";
     }
-    else{
-        // insert user
-        $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $email, $hashedPassword);
+    else if(strlen($password) < 6){
+        $error = "Password must be at least 6 characters ❌";
+    }
+    else {
+        // Check if email already exists
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        if($stmt->execute()){
-            echo "Signup successful ✅";
-        }
-        else{
-            echo "Signup failed ❌";
+        if($result->num_rows > 0){
+            $error = "Email already registered ❌";
+        } else {
+
+            // Hash password
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            // Insert user
+            $stmt = $conn->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
+            $stmt->bind_param("ss", $email, $hashed_password);
+
+            if($stmt->execute()){
+                header("Location: index.php");
+                exit();
+            } else {
+                $error = "Signup failed ❌";
+            }
         }
     }
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup</title>
+</head>
+<body>
+
+<h2>Signup</h2>
+
+<?php if(isset($error)) { ?>
+    <p style="color:red; font-weight:bold;"><?php echo $error; ?></p>
+<?php } ?>
+
+<form method="POST" action="signup.php">
+    <label>Email:</label><br>
+    <input type="text" name="email" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <button type="submit">Signup</button>
+</form>
+
+<p>Already have account? <a href="index.php">Login</a></p>
+
+</body>
+</html>

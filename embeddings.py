@@ -187,10 +187,7 @@ if __name__ == "__main__":
     RESUME_PDF_PATH = "Rajvi_Resume (2).pdf"  # change this
 
     # ✅ 2) Paste JD text here (or take input)
-    JD_TEXT = """
-    We are looking for a frontend developer with experience in React, REST APIs,
-    JavaScript, Git, and basic knowledge of Docker and AWS.
-    """
+    JD_TEXT = input("Enter JD")
 
     print("✅ Extracting Resume text from PDF...")
     resume_text = extract_text_from_pdf(RESUME_PDF_PATH)
